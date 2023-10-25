@@ -8,11 +8,11 @@ class SymbolTable(private var size: Int = 97) {
         return intConstants.insert(value);
     }
 
-    public fun addIdentifier(value: String): Pair<Int, String> {
+    public fun addIdentifier(value: String): Pair<Int, Int> {
         return identifiers.insert(value);
     }
 
-    public fun addStringConstant(value: String): Pair<Int, String> {
+    public fun addStringConstant(value: String): Pair<Int, Int> {
         return stringConstants.insert(value);
     }
 
@@ -22,9 +22,15 @@ class SymbolTable(private var size: Int = 97) {
 
     public fun hasIdentifier(identifier: String): Boolean = identifiers.contains(identifier);
 
-    public fun getIdentifierPosition(identifier: String): Pair<Int, String> = identifiers.getPosition(identifier);
+    public fun getIdentifierPosition(identifier: String): Pair<Int, Int> = identifiers.getPosition(identifier);
 
     public fun getIntIdentifierPosition(int: Int): Pair<Int, Int> = intConstants.getPosition(int);
 
-    public fun getStringIdentifierPosition(string: String): Pair<Int, String> = stringConstants.getPosition(string);
+    public fun getStringIdentifierPosition(string: String): Pair<Int, Int> = stringConstants.getPosition(string);
+
+    public fun getIntByPosition(position: Pair<Int, Int>): Int = intConstants.getByPosition(position);
+
+    public fun getStringByPosition(position: Pair<Int, Int>): String = stringConstants.getByPosition(position);
+
+    public fun getIdentifierByPosition(position: Pair<Int, Int>): String = identifiers.getByPosition(position);
 }

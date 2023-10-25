@@ -24,16 +24,25 @@ class SymbolTableTests {
         val symbolTable : SymbolTable = SymbolTable();
 
         symbolTable.addStringConstant("asd");
-        val value: Pair<Int, String> = symbolTable.getStringIdentifierPosition("asd");
-        assert(value.second == "asd");
+        val position: Pair<Int, Int> = symbolTable.getStringIdentifierPosition("asd");
+
+        assert(position.second == 0);
+
+        val value = symbolTable.getStringByPosition(position)
+
+        assert(value == "asd")
     }
 
     private fun testAddIntIdentifier_shouldReturnTheAddedInt_returnsAddedInt(){
         val symbolTable : SymbolTable = SymbolTable();
 
         symbolTable.addIntConstant(3);
-        val value: Pair<Int, Int> = symbolTable.getIntIdentifierPosition(3)
-        assert(value.second == 3);
+        val position: Pair<Int, Int> = symbolTable.getIntIdentifierPosition(3)
+        assert(position.second == 0);
+
+        val number = symbolTable.getIntByPosition(position)
+
+        assert(number == 3)
     }
 
     private fun testAddIdentifier_shouldThrowNotFoundException_throwNotFoundException(){
@@ -41,7 +50,7 @@ class SymbolTableTests {
 
         symbolTable.addIdentifier("asd");
         try{
-            val value: Pair<Int, String> = symbolTable.getIdentifierPosition("a");
+            val value: Pair<Int, Int> = symbolTable.getIdentifierPosition("a");
         }
         catch (e: NotFoundException){
             return

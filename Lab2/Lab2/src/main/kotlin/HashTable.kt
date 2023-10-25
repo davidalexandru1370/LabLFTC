@@ -51,11 +51,11 @@ class HashTable<T>(private var size: Int) {
         return value;
     }
 
-    public fun insert(key: T): Pair<Int, T>{
+    public fun insert(key: T): Pair<Int, Int>{
         val hashValue: Int = computeHashValue(key);
         if(!this.items[hashValue].contains(key)){
             this.items[hashValue].add(key);
-            return Pair(hashValue, key);
+            return Pair(hashValue, items[hashValue].size - 1);
         }
         throw DuplicateEntryException("Key already exists");
     }
@@ -65,13 +65,21 @@ class HashTable<T>(private var size: Int) {
         return this.items[hashValue].contains(key);
     }
 
-    public fun getPosition(key: T) : Pair<Int, T>{
+    public fun getPosition(key: T) : Pair<Int, Int>{
         if(this.contains(key)){
             val hashValue = computeHashValue(key);
-            return Pair(hashValue, key);
+            return Pair(hashValue, this.items[hashValue].indexOf(key));
         }
 
         throw NotFoundException("Key does not exist");
+    }
+
+    public fun getByPosition(position: Pair<Int, Int>): T{
+        if(position.first >= this.size || position.second >= this.items[position.first].size){
+            throw IndexOutOfBoundsException("Position is out of bounds");
+        }
+
+        return this.items[position.first][position.second];
     }
 
     override fun toString(): String {
