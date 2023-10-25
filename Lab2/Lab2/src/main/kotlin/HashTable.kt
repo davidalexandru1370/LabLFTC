@@ -1,3 +1,6 @@
+import exceptions.DuplicateEntryException
+import exceptions.NotFoundException
+
 class HashTable<T>(private var size: Int) {
     private var items: ArrayList<ArrayList<T>> = ArrayList(size);
 
@@ -54,7 +57,7 @@ class HashTable<T>(private var size: Int) {
             this.items[hashValue].add(key);
             return Pair(hashValue, key);
         }
-        throw Exception("Key already exists");
+        throw DuplicateEntryException("Key already exists");
     }
 
     public fun contains(key: T): Boolean{
@@ -68,7 +71,7 @@ class HashTable<T>(private var size: Int) {
             return Pair(hashValue, key);
         }
 
-        throw Exception("Key does not exist");
+        throw NotFoundException("Key does not exist");
     }
 
     override fun toString(): String {

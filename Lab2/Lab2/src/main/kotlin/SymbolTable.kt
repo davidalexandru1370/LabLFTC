@@ -16,7 +16,7 @@ class SymbolTable(private var size: Int = 97) {
         return stringConstants.insert(value);
     }
 
-    public fun hasStringIdentifier(string: String): Boolean = identifiers.contains(string);
+    public fun hasStringIdentifier(string: String): Boolean = stringConstants.contains(string);
 
     public fun hasIntIdentifier(int: Int): Boolean = intConstants.contains(int);
 
