@@ -9,9 +9,6 @@ class Scanner {
     private var operators = listOf("+", "-", "*", "/", "%", "=", "==", "!=", "<", "<=", ">", ">=", "&&", "||", "!")
     private var reservedWords =
         listOf(
-            "int",
-            "string",
-            "char",
             "read",
             "readInt",
             "if",
@@ -75,16 +72,16 @@ class Scanner {
     }
 
     private fun parseIdentifier(): Boolean {
-        var identifierRegex: Regex = Regex("^([a-zA-Z][a-zA-Z0-9]*)")
+        var identifierRegex: Regex = Regex("(int|string|char)\\s+[a-zA-Z][a-zA-Z0-9]*")
+        var substr = program.code.substring(program.index)
+        println(substr.matches(identifierRegex))
         var match = identifierRegex.find(program.code, program.index)
 
         if (match == null) {
             return false
         }
 
-        if (!validateIdentifier(match.value)) {
-            return false;
-        }
+        
 
         program.index += match.value.length
 
