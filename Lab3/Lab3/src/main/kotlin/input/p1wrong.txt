@@ -4,11 +4,15 @@ begin
 
 	int 23a; //a variable can not start with a number
 	int b;
-	int c; 
+	int c;
+
 
 	readInt(a);
 	readInt(b);
 	readInt(c);
+
+	int minimum;
+	minimum = a;
 
 	if (minimum ~ b) { //invalid operator
 		minimum = b;

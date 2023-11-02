@@ -1,5 +1,6 @@
 import exceptions.DuplicateEntryException
 import exceptions.ScannerException
+import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.Path
@@ -49,29 +50,20 @@ class Scanner {
         }
 
         fun overcomeComments() {
-            while (program.index < program.codeLength && program.code[program.index] == '/') {
-                if (program.index + 1 < program.codeLength && program.code[program.index + 1] == '/') {
-                    while (program.index < program.codeLength && program.code[program.index] != '\n') {
-                        program.index++
-                    }
-                    program.lineIndex += 1
+            var substr = program.code.substring(program.index)
+            while (program.index < program.codeLength && Regex("^(//)").find(substr) != null) {
+
+                while (program.index < program.codeLength && program.code[program.index] != '\n') {
+                    program.index++
                 }
+                substr = program.code.substring(program.index)
+                program.lineIndex += 1
             }
         }
+        overcomeSpaces()
         overcomeComments()
         overcomeSpaces()
-    }
 
-    private fun validateIdentifier(match: String): Boolean {
-        if (reservedWords.contains(match) == false) {
-            return false
-        }
-
-        if (!Regex("^(int|char|string)[ \t]+[a-zA-Z][a-zA-Z0-9]*").matches(match)) {
-            return false
-        }
-
-        return symbolTable.hasIdentifier(match)
     }
 
     private fun parseNewIdentifier(): Boolean {
@@ -84,7 +76,9 @@ class Scanner {
         }
 
         try {
-            this.symbolTable.addIdentifier(match.value.split(" ")[1])
+            val name = match.value.split(" ")[1]
+            val location = this.symbolTable.addIdentifier(name)
+            this.programInternalForm.addEntry(ProgramInternalFormEntry(name, location))
         } catch (duplicateKeyException: DuplicateEntryException) {
             throw ScannerException(duplicateKeyException.message!!)
         }
@@ -108,6 +102,12 @@ class Scanner {
             return false
         }
 
+        programInternalForm.addEntry(
+            ProgramInternalFormEntry(
+                match.value,
+                symbolTable.getIdentifierPosition(match.value)
+            )
+        )
         this.program.index += match.value.length
         return true
     }
@@ -126,6 +126,9 @@ class Scanner {
         if (possibleSymbol == "\n") {
             program.lineIndex += 1
         }
+
+        this.programInternalForm.addEntry(ProgramInternalFormEntry(possibleSymbol))
+
         program.index += possibleSymbol.length
         return true
     }
@@ -139,10 +142,14 @@ class Scanner {
 
         var hasMatch: Boolean = false
         var length: Int = 0
+        var reservedWord = ""
         for (token in reservedWords) {
             if (possibleToken.startsWith(token)) {
                 hasMatch = true
-                length = max(length, token.length)
+                if (token.length > reservedWord.length) {
+                    reservedWord = token
+                    length = max(length, token.length)
+                }
             }
         }
 
@@ -150,12 +157,14 @@ class Scanner {
             return false
         }
 
+        this.programInternalForm.addEntry(ProgramInternalFormEntry(reservedWord))
+
         program.index += length + 1
         return true
     }
 
     private fun parseStringConstant(): Boolean {
-        var stringRegex = Regex("^(\").*(\")",RegexOption.CANON_EQ)
+        var stringRegex = Regex("^(\").*(\")", RegexOption.CANON_EQ)
         var substr = program.code.substring(program.index)
         var match = stringRegex.find(substr)
 
@@ -163,9 +172,15 @@ class Scanner {
             return false
         }
 
+        var location: Pair<Int, Int>;
+
         if (!symbolTable.hasStringIdentifier(match.value)) {
-            symbolTable.addStringConstant(match.value)
+            location = symbolTable.addStringConstant(match.value)
+        } else {
+            location = symbolTable.getStringIdentifierPosition(match.value)
         }
+
+        this.programInternalForm.addEntry(ProgramInternalFormEntry(match.value, location))
 
         program.index += match.value.length
         return true
@@ -180,9 +195,15 @@ class Scanner {
             return false
         }
 
+        var location: Pair<Int, Int>;
+
         if (!symbolTable.hasIntIdentifier(match.value.toInt())) {
-            symbolTable.addIntConstant(match.value.toInt())
+            location = symbolTable.addIntConstant(match.value.toInt())
+        } else {
+            location = symbolTable.getIntIdentifierPosition(match.value.toInt())
         }
+
+        this.programInternalForm.addEntry(ProgramInternalFormEntry(match.value, location))
 
         program.index += match.value.length
 
@@ -190,7 +211,25 @@ class Scanner {
     }
 
     private fun parseCharIdentifier(): Boolean {
+        var stringRegex = Regex("^(\').(\')", RegexOption.CANON_EQ)
+        var substr = program.code.substring(program.index)
+        var match = stringRegex.find(substr)
 
+        if (match == null) {
+            return false
+        }
+
+        var location: Pair<Int, Int>;
+
+        if (!symbolTable.hasStringIdentifier(match.value)) {
+            location = symbolTable.addStringConstant(match.value)
+        } else {
+            location = symbolTable.getStringIdentifierPosition(match.value)
+        }
+
+        this.programInternalForm.addEntry(ProgramInternalFormEntry(match.value, location))
+
+        program.index += match.value.length
         return true
     }
 
@@ -208,10 +247,11 @@ class Scanner {
             return
         } else if (parseSymbol()) {
             return
-        } else if(parseStringConstant()){
+        } else if (parseStringConstant()) {
             return
-        }
-        else if(parseIntIdentifier()){
+        } else if (parseIntIdentifier()) {
+            return
+        } else if (parseCharIdentifier()) {
             return
         }
 
@@ -229,4 +269,13 @@ class Scanner {
         return this.programInternalForm
     }
 
+    fun printPIF(){
+        val pif = this.programInternalForm.toString()
+        File("src/main/kotlin/output/${fileName}_pif.txt").writeText(pif)
+    }
+
+    fun printSymbolTable(){
+        val symbolTable = this.symbolTable.toString()
+        File("src/main/kotlin/output/${fileName}_symbol_table.txt").writeText(symbolTable)
+    }
 }

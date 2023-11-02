@@ -83,7 +83,18 @@ class HashTable<T>(private var size: Int) {
     }
 
     override fun toString(): String {
-        return "HashTable(size=$size, items=$items)"
+        val stringBuilder: StringBuilder = StringBuilder();
+
+        for (list: ArrayList<T> in this.items) {
+            stringBuilder.append("[")
+            for (element: T in list) {
+                stringBuilder.append(element.toString() + ",");
+            }
+            stringBuilder.removePrefix(",")
+            stringBuilder.append("]\n")
+        }
+
+        return stringBuilder.toString()
     }
 
 }

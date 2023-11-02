@@ -33,4 +33,16 @@ class SymbolTable(private var size: Int = 97) {
     public fun getStringByPosition(position: Pair<Int, Int>): String = stringConstants.getByPosition(position);
 
     public fun getIdentifierByPosition(position: Pair<Int, Int>): String = identifiers.getByPosition(position);
+
+    public override fun toString(): String {
+        var stringBuilder: StringBuilder = StringBuilder();
+        stringBuilder.append("Identifiers:\n");
+        stringBuilder.append(identifiers.toString());
+        stringBuilder.append("Int Constants:\n");
+        stringBuilder.append(intConstants.toString());
+        stringBuilder.append("String Constants:\n");
+        stringBuilder.append(stringConstants.toString());
+
+        return stringBuilder.toString()
+    }
 }
