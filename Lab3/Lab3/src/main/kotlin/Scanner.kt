@@ -77,6 +77,9 @@ class Scanner {
 
         try {
             val name = match.value.split(" ")[1]
+            if (reservedWords.contains(name) || delimiters.contains(name) || operators.contains(name)) {
+                throw ScannerException("Invalid identifier name at line ${program.lineIndex} at index ${program.index}")
+            }
             val location = this.symbolTable.addIdentifier(name)
             this.programInternalForm.addEntry(ProgramInternalFormEntry(name, location))
         } catch (duplicateKeyException: DuplicateEntryException) {
@@ -269,12 +272,12 @@ class Scanner {
         return this.programInternalForm
     }
 
-    fun printPIF(){
+    fun printPIF() {
         val pif = this.programInternalForm.toString()
         File("src/main/kotlin/output/${fileName}_pif.txt").writeText(pif)
     }
 
-    fun printSymbolTable(){
+    fun printSymbolTable() {
         val symbolTable = this.symbolTable.toString()
         File("src/main/kotlin/output/${fileName}_symbol_table.txt").writeText(symbolTable)
     }
