@@ -1,3 +1,4 @@
+import exceptions.DuplicateEntryException
 import exceptions.ScannerException
 import java.nio.file.Files
 import java.nio.file.Path
@@ -5,7 +6,7 @@ import kotlin.io.path.Path
 import kotlin.math.max
 
 class Scanner {
-    private var delimiters = listOf("{", "}", "(", ")", "[", "]", ":", ";", " ", "\t", ",", "\n", "'", "\"", "\r")
+    private var delimiters = listOf("{", "}", "(", ")", "[", "]", ":", ";", " ", "\t", ",", "\n", "\r")
     private var operators = listOf("+", "-", "*", "/", "%", "=", "==", "!=", "<", "<=", ">", ">=", "&&", "||", "!")
     private var reservedWords =
         listOf(
@@ -37,7 +38,9 @@ class Scanner {
 
     private fun nextToken() {
         fun overcomeSpaces() {
-            while (program.index < program.codeLength && program.code[program.index].toString().matches(Regex("[ \t\r\n]"))) {
+            while (program.index < program.codeLength && program.code[program.index].toString()
+                    .matches(Regex("[ \t\r\n]"))
+            ) {
                 if (program.code[program.index] == '\n') {
                     program.lineIndex++
                 }
@@ -71,20 +74,41 @@ class Scanner {
         return symbolTable.hasIdentifier(match)
     }
 
-    private fun parseIdentifier(): Boolean {
-        var identifierRegex: Regex = Regex("(int|string|char)\\s+[a-zA-Z][a-zA-Z0-9]*")
+    private fun parseNewIdentifier(): Boolean {
+        var identifierRegex: Regex = Regex("^(int|string|char)\\s+[a-zA-Z][a-zA-Z0-9]*")
         var substr = program.code.substring(program.index)
-        println(substr.matches(identifierRegex))
-        var match = identifierRegex.find(program.code, program.index)
+        var match = identifierRegex.find(substr)
 
         if (match == null) {
             return false
         }
 
-        
+        try {
+            this.symbolTable.addIdentifier(match.value.split(" ")[1])
+        } catch (duplicateKeyException: DuplicateEntryException) {
+            throw ScannerException(duplicateKeyException.message!!)
+        }
 
         program.index += match.value.length
 
+        return true
+    }
+
+    private fun parseExistingIdentifier(): Boolean {
+        var identifierRegex = Regex("^[a-zA-Z][a-zA-Z0-9]*")
+        var substr = program.code.substring(program.index)
+        var match = identifierRegex.find(substr)
+
+        if (match == null || reservedWords.find { it == match.value } != null) {
+            return false
+        }
+
+
+        if (!symbolTable.hasIdentifier(match.value)) {
+            return false
+        }
+
+        this.program.index += match.value.length
         return true
     }
 
@@ -93,7 +117,7 @@ class Scanner {
             .substring(program.index)
             .split(Regex("[ \t\r\n]", RegexOption.IGNORE_CASE))
             .filter { it.isNotEmpty() }
-            .first()
+            .first()[0].toString()
 
         val allSymbols = delimiters.union(operators);
         if ((possibleSymbol in allSymbols) == false) {
@@ -130,19 +154,64 @@ class Scanner {
         return true
     }
 
+    private fun parseStringConstant(): Boolean {
+        var stringRegex = Regex("^(\").*(\")",RegexOption.CANON_EQ)
+        var substr = program.code.substring(program.index)
+        var match = stringRegex.find(substr)
+
+        if (match == null) {
+            return false
+        }
+
+        if (!symbolTable.hasStringIdentifier(match.value)) {
+            symbolTable.addStringConstant(match.value)
+        }
+
+        program.index += match.value.length
+        return true
+    }
+
+    private fun parseIntIdentifier(): Boolean {
+        var intRegex = Regex("-?\\d+")
+        var substr = program.code.substring(program.index)
+        var match = intRegex.find(substr)
+
+        if (match == null) {
+            return false
+        }
+
+        if (!symbolTable.hasIntIdentifier(match.value.toInt())) {
+            symbolTable.addIntConstant(match.value.toInt())
+        }
+
+        program.index += match.value.length
+
+        return true
+    }
+
+    private fun parseCharIdentifier(): Boolean {
+
+        return true
+    }
+
     private fun parseToken() {
         nextToken()
         if (program.index >= program.codeLength) {
             return
         }
 
-        if (parseIdentifier()) {
+        if (parseNewIdentifier()) {
+            return
+        } else if (parseReservedWord()) {
+            return
+        } else if (parseExistingIdentifier()) {
+            return
+        } else if (parseSymbol()) {
+            return
+        } else if(parseStringConstant()){
             return
         }
-        if (parseReservedWord()) {
-            return
-        }
-        if (parseSymbol()) {
+        else if(parseIntIdentifier()){
             return
         }
 
