@@ -77,11 +77,15 @@ class Scanner {
 
         try {
             val name = match.value.split(" ")[1]
-            if (reservedWords.contains(name) || delimiters.contains(name) || operators.contains(name)) {
-                throw ScannerException("Invalid identifier name at line ${program.lineIndex} at index ${program.index}")
-            }
+//            if (reservedWords.contains(name) || delimiters.contains(name) || operators.contains(name)) {
+//                throw ScannerException("Invalid identifier name at line ${program.lineIndex} at index ${program.index}")
+//            }
             val location = this.symbolTable.addIdentifier(name)
+            this.programInternalForm.addEntry(ProgramInternalFormEntry(match.value.split(' ')[0]))
             this.programInternalForm.addEntry(ProgramInternalFormEntry(name, location))
+            for(entry in match.value.split(" ").subList(2, match.value.split(" ").size)){
+                this.programInternalForm.addEntry(ProgramInternalFormEntry(name))
+            }
         } catch (duplicateKeyException: DuplicateEntryException) {
             throw ScannerException(duplicateKeyException.message!!)
         }
@@ -162,7 +166,7 @@ class Scanner {
 
         this.programInternalForm.addEntry(ProgramInternalFormEntry(reservedWord))
 
-        program.index += length + 1
+        program.index += length
         return true
     }
 
