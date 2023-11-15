@@ -78,12 +78,14 @@ class FiniteAutomata() {
         val stringBuilder: StringBuilder = StringBuilder()
 
         for (transition in transitions) {
-            stringBuilder.append(" ".repeat(transition.key.first.length + 1))
-            stringBuilder.append(transition.key.first)
+            stringBuilder.append(" ".repeat(transition.key.first.length + 2))
+            stringBuilder.append(transition.key.second)
             stringBuilder.append(delimiterBetweenStates)
             stringBuilder.append(transition.key.first)
             stringBuilder.append(" -> ")
-            stringBuilder.append(this.transitions.get(transition as Pair<String, String>)!!.joinToString(","))
+            stringBuilder.append(transition.value.iterator().next().toString())
+            stringBuilder.append(delimiterBetweenStates)
+            stringBuilder.append(delimiterBetweenStates)
 
         }
 
