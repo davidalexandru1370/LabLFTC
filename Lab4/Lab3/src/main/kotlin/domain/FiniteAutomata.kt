@@ -20,7 +20,7 @@ class FiniteAutomata() {
         var currentState: String = this.initialState
 
         var index = 0
-        while (index < sequence.length - 1) {
+        while (index < sequence.length) {
             val symbol = sequence[index].toString()
             var newState = ""
 

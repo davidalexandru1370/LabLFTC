@@ -2,7 +2,7 @@
 program{
 begin
 
-	int a; //invalid variable name
+	int 23a; //invalid variable name
 	int b;
 	int c;
 
