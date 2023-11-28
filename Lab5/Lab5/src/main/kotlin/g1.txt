@@ -1,0 +1,11 @@
+S, A, B, C, D
+a, +, *, (, )
+S
+S -> BA
+A -> +BA
+A -> eps
+B -> DC
+C -> *DC
+C -> eps
+D -> (S)
+D -> a
