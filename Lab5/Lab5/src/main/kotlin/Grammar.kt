@@ -29,7 +29,6 @@ class Grammar(filePath: String) {
             return false
         }
 
-
         this.productions.values.forEach { p ->
             p.forEach { t ->
                 t.forEach { s ->
