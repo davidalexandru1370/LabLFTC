@@ -86,13 +86,13 @@ class Grammar(filePath: String) {
         val delimiter: String = " "
         val lines: List<String> = File(filePath).readLines()
 
-        lines[0].split("=")[1].split(delimiter).forEach { t -> nonTerminals.add(t) }
-        lines[1].substring(4).split(delimiter).forEach { nt -> terminals.add(nt) }
-        startSymbol = lines[2].split("=")[1].trim()
+        lines[0].split(delimiter).forEach { t -> if (t.trim().isNotEmpty()) nonTerminals.add(t.trim()) }
+        lines[1].split(delimiter).forEach { nt -> if (nt.trim().isNotEmpty()) terminals.add(nt.trim()) }
+        startSymbol = lines[2].trim()
         lines.drop(3).forEach { p ->
             val production: List<String> = p.split("->")
             val from: String = production[0].trim()
-            val to: ArrayList<String> = production[1].trim().split(delimiter).toCollection(ArrayList());
+            val to: ArrayList<String> = production[1].trim().split(Regex("[ \t]+")).toCollection(ArrayList());
             if (!productions.containsKey(from))
                 productions[from] = arrayListOf(to)
             else {

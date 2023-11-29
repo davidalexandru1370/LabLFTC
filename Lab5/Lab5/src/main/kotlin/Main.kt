@@ -1,5 +1,5 @@
 fun main(args: Array<String>) {
-    val grammar = Grammar("src/main/kotlin/g2.txt")
+    val grammar = Grammar("src/main/kotlin/g1.txt")
     val menu = mutableMapOf(
         "1" to "Check if the grammar is context free",
         "2" to "Get the productions",

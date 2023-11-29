@@ -1,6 +1,6 @@
-N = Program CompoundStatement Statement AssignStatement IfStatement WhileStatement VariableStatement AssignmentStatement ArrayDeclarationStatement ConditionalStatement MethodStatement Identifier Expression Letter Digit Boolean IntExpression StringExpression CharExpression BooleanExpression MathematicalSymbol RelationalSymbol Sign Number CharacterOrDigit Symbol LogicalOperator VariableType LetterOrDigit ArrayContentStatement IntConstant StringConstant CharConstant ArrayContentInt ArrayContentString ArrayContentChar NonZeroDigit ArrayContent
-E = a b c d e f g h i j k l m n o p q r s t u v w x y z A B C D E F G H I J K L M N O P Q R S T U V W X Y Z 0 1 2 3 4 5 6 7 8 9 [ ] ' ; ? , . ( ) " ! : { * + newline space && || / = } <= >= < > _ - == != int string char read readInt if else display while def return true false
-S = Program
+Program CompoundStatement Statement AssignStatement IfStatement WhileStatement VariableStatement AssignmentStatement ArrayDeclarationStatement ConditionalStatement MethodStatement Identifier Expression Letter Digit Boolean IntExpression StringExpression CharExpression BooleanExpression MathematicalSymbol RelationalSymbol Sign Number CharacterOrDigit Symbol LogicalOperator VariableType LetterOrDigit ArrayContentStatement IntConstant StringConstant CharConstant ArrayContentInt ArrayContentString ArrayContentChar NonZeroDigit ArrayContent
+a b c d e f g h i j k l m n o p q r s t u v w x y z A B C D E F G H I J K L M N O P Q R S T U V W X Y Z 0 1 2 3 4 5 6 7 8 9 [ ] ' ; ? , . ( ) " ! : { * + newline space && || / = } <= >= < > _ - == != int string char read readInt if else display while def return true false
+Program
 Program -> CompoundStatement
 CompoundStatement -> Statement CompoundStatement
 CompoundStatement -> epsilon
