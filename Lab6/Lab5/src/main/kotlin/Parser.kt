@@ -3,7 +3,7 @@ import java.util.Objects
 class Parser(private var grammar: Grammar) {
     private val EPSILON: String = "epsilon"
     private val NULL: String = "null"
-    private val firstTable: HashMap<String, HashSet<String>> = HashMap()
+    private var firstTable: HashMap<String, HashSet<String>> = HashMap()
     private val followTable: HashMap<String, HashSet<String>> = HashMap()
 
     init {
@@ -15,15 +15,17 @@ class Parser(private var grammar: Grammar) {
             val f0 = getF0(nonTerminal)
             firstTable[nonTerminal] = f0
         }
+        firstTable.forEach { (k, v) -> println("${k} -> ${v}") }
 
+        val allFirstValues: ArrayList<HashSet<String>> = ArrayList(firstTable.entries.map { it.value }.toList())
         var noMoreChanges: Boolean = true
 
         do {
-            var nextColumn: HashMap<String, HashSet<String>> = HashMap()
+            val nextColumn: HashMap<String, HashSet<String>> = HashMap()
             for (nonTerminal in grammar.nonTerminals) {
                 val productionsForNonTerminal: HashSet<ArrayList<String>> =
                     grammar.getProductionsForGivenNonTerminalList(nonTerminal)
-                val previousValues: HashSet<String> = firstTable[nonTerminal]!!
+                val previousValues: HashSet<String> = HashSet(firstTable[nonTerminal]!!)
 
                 for (production in productionsForNonTerminal) {
                     val rightNonTerminals: ArrayList<String> = ArrayList()
@@ -46,17 +48,23 @@ class Parser(private var grammar: Grammar) {
                 noMoreChanges = false
             }
 
+            println("------------------")
+            nextColumn.forEach { (k, v) -> println("$k -> $v") }
+            println("------------------")
+
+            firstTable = nextColumn
+
         } while (noMoreChanges)
 
-        firstTable.forEach { (k, v) -> println("${k} -> ${v}") }
+        //firstTable.forEach { (k, v) -> println("${k} -> ${v}") }
     }
 
     private fun concatenation(rightTerminal: String, rightNonTerminals: ArrayList<String>): ArrayList<String> {
         if (rightNonTerminals.size == 0) {
-            arrayListOf<String>()
+            return arrayListOf<String>()
         }
         if (rightNonTerminals.size == 1) {
-            firstTable[rightNonTerminals[0]]!!
+            return firstTable[rightNonTerminals[0]]!!.toMutableList() as ArrayList<String>
         }
 
 
