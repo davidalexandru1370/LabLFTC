@@ -1,11 +1,14 @@
+import lombok.Getter
 import java.io.File
 import java.lang.StringBuilder
 
+@Getter
 class Grammar(filePath: String) {
-    private val productions: HashMap<String, ArrayList<ArrayList<String>>> = HashMap()
-    private val terminals: MutableList<String> = mutableListOf()
-    private val nonTerminals: MutableList<String> = mutableListOf()
-    private var startSymbol: String = ""
+    val productions: HashMap<String, HashSet<ArrayList<String>>> = HashMap()
+    val terminals: HashSet<String> = HashSet()
+    val nonTerminals: HashSet<String> = HashSet()
+    var startSymbol: String = ""
+
 
     init {
         readFromFile(filePath)
@@ -75,6 +78,14 @@ class Grammar(filePath: String) {
         return result.toString()
     }
 
+    fun getProductionsForGivenNonTerminalList(nonTerminal: String): HashSet<ArrayList<String>> {
+        if (!productions.containsKey(nonTerminal)) {
+            return hashSetOf()
+        }
+
+        return this.productions[nonTerminal]!!
+    }
+
     fun getStartSymbolAsString(): String {
         return this.startSymbol
     }
@@ -91,12 +102,11 @@ class Grammar(filePath: String) {
             val from: String = production[0].trim()
             val to: ArrayList<String> = production[1].trim().split(Regex("[ \t]+")).toCollection(ArrayList());
             if (!productions.containsKey(from))
-                productions[from] = arrayListOf(to)
+                productions[from] = hashSetOf(to)
             else {
                 productions[from]!!.add(to)
             }
 
         }
     }
-
 }
