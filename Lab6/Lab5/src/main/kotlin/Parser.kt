@@ -1,13 +1,12 @@
-import java.util.Objects
-
 class Parser(private var grammar: Grammar) {
     private val EPSILON: String = "epsilon"
     private val NULL: String = "null"
     private var firstTable: HashMap<String, HashSet<String>> = HashMap()
-    private val followTable: HashMap<String, HashSet<String>> = HashMap()
+    private var followTable: HashMap<String, HashSet<String>> = HashMap()
 
     init {
         first()
+        follow()
     }
 
     private fun first() {
@@ -26,7 +25,6 @@ class Parser(private var grammar: Grammar) {
                 val productionsForNonTerminal: HashSet<ArrayList<String>> =
                     grammar.getProductionsForGivenNonTerminalList(nonTerminal)
                 val previousValues: HashSet<String> = HashSet(firstTable[nonTerminal]!!)
-
                 for (production in productionsForNonTerminal) {
                     val rightNonTerminals: ArrayList<String> = ArrayList()
                     var rightTerminal: String = ""
@@ -56,7 +54,6 @@ class Parser(private var grammar: Grammar) {
 
         } while (noMoreChanges)
 
-        //firstTable.forEach { (k, v) -> println("${k} -> ${v}") }
     }
 
     private fun concatenation(rightTerminal: String, rightNonTerminals: ArrayList<String>): ArrayList<String> {
@@ -112,6 +109,74 @@ class Parser(private var grammar: Grammar) {
             }
         }
         return f0
+    }
 
+    private fun follow() {
+        for (nonTerminal in grammar.nonTerminals) {
+            followTable[nonTerminal] = HashSet()
+        }
+        followTable[grammar.startSymbol]!!.add(this.EPSILON)
+        var noMoreChanges: Boolean = true
+        println("Follow table:")
+        followTable.forEach { (k, v) -> println("$k -> $v") }
+
+        do {
+            val nextColumn: HashMap<String, HashSet<String>> = HashMap()
+            for (nonTerminal in this.grammar.nonTerminals) {
+                nextColumn[nonTerminal] = HashSet<String>()
+                val productionsWithGivenNonTerminalInRight: HashMap<String, HashSet<ArrayList<String>>> = HashMap()
+                for (production in grammar.productions) {
+                    val rightProductions = production.value
+                    val leftProduction = production.key
+                    for (rightProduction in rightProductions) {
+                        if (rightProduction.contains(nonTerminal)) {
+                            if (leftProduction !in productionsWithGivenNonTerminalInRight) {
+                                productionsWithGivenNonTerminalInRight[leftProduction] = HashSet()
+                            }
+                            productionsWithGivenNonTerminalInRight[leftProduction]!!.add(rightProduction)
+                        }
+                    }
+                }
+
+                val nextValues: HashSet<String> = HashSet()
+                nextValues.addAll(followTable[nonTerminal]!!)
+
+                for (productionWithGivenNonTerminalInRight in productionsWithGivenNonTerminalInRight.entries) {
+                    val key = productionWithGivenNonTerminalInRight.key
+                    for (production in productionWithGivenNonTerminalInRight.value) {
+                        for (index in 0..<production.size) {
+                            if (production[index] == nonTerminal) {
+                                if (index + 1 == production.size) {
+                                    nextValues.addAll(this.followTable[key]!!)
+                                } else {
+                                    val nextSymbol: String = production[index + 1]
+                                    if (grammar.terminals.contains(nextSymbol)) {
+                                        nextValues.add(nextSymbol)
+                                    } else {
+                                        for (symbol in firstTable[nextSymbol]!!) {
+                                            if (symbol == this.EPSILON) {
+                                                nextValues.addAll(followTable[key]!!)
+                                            } else {
+                                                nextValues.addAll(firstTable[nextSymbol]!!)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                nextColumn[nonTerminal] = nextValues
+            }
+            if (nextColumn.entries.equals(followTable.entries)) {
+                noMoreChanges = false
+            }
+            followTable = nextColumn
+
+            println("------------------")
+            nextColumn.forEach { (k, v) -> println("$k -> $v") }
+            println("------------------")
+
+        } while (noMoreChanges)
     }
 }
