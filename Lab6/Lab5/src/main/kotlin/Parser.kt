@@ -4,6 +4,7 @@ class Parser(private var grammar: Grammar) {
     private var firstTable: HashMap<String, HashSet<String>> = HashMap()
     private var followTable: HashMap<String, HashSet<String>> = HashMap()
 
+
     init {
         first()
         follow()
@@ -178,5 +179,13 @@ class Parser(private var grammar: Grammar) {
             println("------------------")
 
         } while (noMoreChanges)
+    }
+
+    public fun getFirstTable(): HashMap<String, HashSet<String>> {
+        return this.firstTable
+    }
+
+    public fun getFollowTable(): HashMap<String, HashSet<String>> {
+        return this.followTable
     }
 }
