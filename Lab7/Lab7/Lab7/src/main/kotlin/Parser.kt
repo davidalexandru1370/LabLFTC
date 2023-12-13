@@ -11,7 +11,9 @@ class Parser(private var grammar: Grammar) {
         first()
         follow()
         parseTable()
-        printParseTable()
+        //printParseTable()
+        var indicies = parseSequence("a*(a+a)")
+        println(indicies)
     }
 
     private fun first() {
@@ -304,14 +306,48 @@ class Parser(private var grammar: Grammar) {
         }
     }
 
-    private fun parseSequence(sequence: String): List<Int>{
+    private fun parseSequence(sequence: String): List<Int> {
         val alpha: Stack<String> = Stack()
         val beta: Stack<String> = Stack()
-        val resultIndices: List<Int> = ArrayList()
+        val resultIndices: ArrayList<Int> = ArrayList()
 
         alpha.push("$")
-        
 
+        sequence.reversed().forEach { c ->
+            alpha.push(c.toString())
+        }
+
+        beta.push("$")
+        beta.push(grammar.startSymbol)
+
+        while (!(alpha.peek() == "$" && beta.peek() == "$")) {
+            val alphaTop: String = alpha.peek()
+            val betaTop: String = beta.peek()
+
+            val key: Pair<String, String> = Pair(betaTop, alphaTop)
+            val value: Pair<String, Int> = (parseTable.get(key) as Pair<String, Int>?)!!
+            if (value.first != "error") {
+                if (value.first == "pop") {
+                    alpha.pop()
+                    beta.pop()
+                } else {
+                    beta.pop()
+
+                    if (value.first != this.EPSILON) {
+                        val value: List<String> = value.first.toString().split(",")
+                        for (i in value.size - 1 downTo 0) {
+                            beta.push(value[i])
+                        }
+                    }
+                    resultIndices.add(value.second)
+                }
+            } else {
+                println("Error for key ${key}")
+                println("alpha: ${alpha}")
+                println("beta: ${beta}")
+                return resultIndices
+            }
+        }
 
         return resultIndices
     }

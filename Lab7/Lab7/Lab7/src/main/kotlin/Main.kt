@@ -1,5 +1,5 @@
 fun main(args: Array<String>) {
-    run_all_tests()
+    //run_all_tests()
     val grammar = Grammar("src/main/kotlin/g1.txt")
     val menu = mutableMapOf(
         "1" to "Check if the grammar is context free",
