@@ -4,7 +4,7 @@ import java.lang.StringBuilder
 
 @Getter
 class Grammar(filePath: String) {
-    val productions: HashMap<String, HashSet<ArrayList<String>>> = HashMap()
+    val productions: HashMap<String, LinkedHashSet<ArrayList<String>>> = HashMap()
     val terminals: HashSet<String> = HashSet()
     val nonTerminals: HashSet<String> = HashSet()
     var startSymbol: String = ""
@@ -78,9 +78,9 @@ class Grammar(filePath: String) {
         return result.toString()
     }
 
-    fun getProductionsForGivenNonTerminalList(nonTerminal: String): HashSet<ArrayList<String>> {
+    fun getProductionsForGivenNonTerminalList(nonTerminal: String): LinkedHashSet<ArrayList<String>> {
         if (!productions.containsKey(nonTerminal)) {
-            return hashSetOf()
+            return LinkedHashSet()
         }
 
         return this.productions[nonTerminal]!!
@@ -102,7 +102,7 @@ class Grammar(filePath: String) {
             val from: String = production[0].trim()
             val to: ArrayList<String> = production[1].trim().split(Regex("[ \t]+")).toCollection(ArrayList());
             if (!productions.containsKey(from))
-                productions[from] = hashSetOf(to)
+                productions[from] = LinkedHashSet(listOf(to))
             else {
                 productions[from]!!.add(to)
             }

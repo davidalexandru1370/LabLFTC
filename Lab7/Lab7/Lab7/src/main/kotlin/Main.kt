@@ -10,7 +10,7 @@ fun main(args: Array<String>) {
         "6" to "Exit"
     )
     val parser: Parser = Parser(grammar)
-
+    val parserOutput: ParserOutput = ParserOutput(parser, "a*(a+a)","src/main/kotlin/out.txt")
     while (true) {
         println("Menu:")
         menu.forEach { (k, v) -> println("$k. $v") }

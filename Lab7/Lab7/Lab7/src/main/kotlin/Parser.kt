@@ -6,6 +6,7 @@ class Parser(private var grammar: Grammar) {
     private var firstTable: HashMap<String, HashSet<String>> = HashMap()
     private var followTable: HashMap<String, HashSet<String>> = HashMap()
     private var parseTable: HashMap<Pair<Any, Any>, Pair<Any, Any>> = HashMap()
+    private var allProductionsAtIndex: ArrayList<ArrayList<String>> = ArrayList()
 
     init {
         first()
@@ -206,7 +207,7 @@ class Parser(private var grammar: Grammar) {
 
         parseTable.put(Pair<String, String>("$", "$"), Pair<String, Int>("accept", -1))
 
-        var allProductions: HashSet<ArrayList<String>> = HashSet()
+        var allProductions: ArrayList<ArrayList<String>> = ArrayList()
         for (production in this.grammar.productions) {
             for (p in production.value) {
                 if (p[0] != this.EPSILON) {
@@ -217,6 +218,7 @@ class Parser(private var grammar: Grammar) {
             }
         }
 
+        this.allProductionsAtIndex = allProductions
 
         for (production in this.grammar.productions) {
             var key: String = production.key
@@ -306,7 +308,7 @@ class Parser(private var grammar: Grammar) {
         }
     }
 
-    private fun parseSequence(sequence: String): List<Int> {
+    public fun parseSequence(sequence: String): List<Int> {
         val alpha: Stack<String> = Stack()
         val beta: Stack<String> = Stack()
         val resultIndices: ArrayList<Int> = ArrayList()
@@ -366,5 +368,17 @@ class Parser(private var grammar: Grammar) {
 
     public fun getFollowTable(): HashMap<String, HashSet<String>> {
         return this.followTable
+    }
+
+    public fun getGrammar(): Grammar {
+        return this.grammar
+    }
+
+    public fun getProductionByItsNumber(productionNumber: Int): List<String> {
+        val production = this.allProductionsAtIndex.toList()[productionNumber - 1]
+        if (production.contains(this.EPSILON)) {
+            return listOf(this.EPSILON)
+        }
+        return production
     }
 }
