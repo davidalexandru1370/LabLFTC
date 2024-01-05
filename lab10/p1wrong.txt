@@ -1,4 +1,3 @@
-//minimum of three numbers, illegal tokens
 program{
 begin
 

@@ -61,7 +61,9 @@ Statement : DeclarationStatement {printf("Statement -> DeclarationStatement \n")
 	|   ReadStatement {printf("Statement -> ReadStatement\n");}
 	;
 
-DeclarationStatement: Type IDENTIFIER {printf("DeclarationStatement -> TYPE  IDENTIFIER\n");};
+DeclarationStatement: Type IDENTIFIER {printf("DeclarationStatement -> TYPE  IDENTIFIER\n");} 
+		      | Type IDENTIFIER EQ Expression {printf("DeclarationStatement -> Type IDENTIFIER = Expression");}
+			;
 
 AssignmentStatement : IDENTIFIER EQ Expression {printf("AssignmentStatement -> IDENTIFIER = Expression\n");};
 
@@ -70,7 +72,10 @@ Term : Term TIMES Factor {printf("Term -> Term * Factor\n");}
        | Factor {printf("Term -> Factor\n");}
        ;
 
-Expression : Expression PLUS Term {printf("Expression -> Expression + Term\n");}
+Expression :
+	|    Expression PLUS Expression {printf("Expression -> Expression + Expression");}
+	|    Term PLUS Term {printf("Expression -> Term + Term\n");}
+	|    Expression PLUS Term {printf("Expression -> Expression + Term\n");}
 	|    Expression MINUS Term {printf("Expression -> Expression - Term\n");}
 	|    Term {printf("Expression -> Term\n");}
 	;
@@ -91,7 +96,6 @@ IfStatement : IF OPEN  Condition CLOSE  BRACKETOPEN CompoundStatement BRACKETCLO
 	;
 
 WhileStatement : WHILE OPEN  Condition CLOSE  BRACKETOPEN CompoundStatement BRACKETCLOSE {printf("WhileStatement -> while (Expression) {CompoundStatement}\n");};
-
 
 DisplayStatement : DISPLAY OPEN Expression CLOSE {printf("DisplayStatement -> display(Expression)");}
 		| DISPLAY OPEN STRINGCONSTANT CLOSE {printf("PrintStatement -> display(STRINGCONSTANT)");}

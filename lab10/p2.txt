@@ -10,10 +10,10 @@ begin
         if(a > b){
             a = a - b;
         }
-        else{
+        else {
             b = b - a;
-        }
-    }
+        };
+    };
 
     display(a);
 end

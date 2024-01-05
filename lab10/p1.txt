@@ -13,11 +13,11 @@ begin
 
 	if (minimum > b) {
 		minimum = b;
-	}
+	};
 
 	if (minimum > c) {
 		minimum = c;
-	}
+	};
 
 	display(minimum);
 end

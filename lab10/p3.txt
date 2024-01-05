@@ -15,7 +15,7 @@ begin
         readInt(number);
         sum = sum + number;
         index = index + 1;
-    }
+    };
 
     display("The sum is: ");
     display(number);
