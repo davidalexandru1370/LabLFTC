@@ -13,8 +13,8 @@ class Parser(private var grammar: Grammar) {
         follow()
         parseTable()
         //printParseTable()
-        var indicies = parseSequence("a*(a+a)")
-        println(indicies)
+        //var indicies = parseSequence("a*(a+a)")
+        //println(indicies)
     }
 
     private fun first() {

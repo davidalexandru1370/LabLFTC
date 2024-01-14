@@ -67,7 +67,7 @@ class ParserOutput {
         this.nodeList = this.nodeList.sortedBy { it.index }.toList() as ArrayList<Node>
 
         val stringBuilder: StringBuilder = StringBuilder()
-        stringBuilder.append("Index" + "Value" + "Parent" + "Sibling" + "\n")
+        stringBuilder.append("Index " + "Value " + "Parent " + "Sibling " + "\n")
 
         nodeList.forEach { node ->
             stringBuilder.append(node)

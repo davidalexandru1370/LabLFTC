@@ -11,9 +11,9 @@ begin
 	int minimum;
 	minimum = a;
 
-	if (minimum > b) {
+	if (minimum > b) { 
 		minimum = b;
-	};
+	}
 
 	if (minimum > c) {
 		minimum = c;
